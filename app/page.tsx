@@ -19,13 +19,9 @@ const GeoBusinessLocator = () => {
   const [centerLon, setCenterLon] = useState("");
   const [businessUrl, setBusinessUrl] = useState("");
   const [businessNames, setBusinessNames] = useState(["Petey's HVAC"]);
-  const [keywords, setKeywords] = useState([
-    "Air Conditioning Contractors",
-    "Air Conditioning Repair",
-  ]);
+  const [keywords, setKeywords] = useState(["Air Conditioning Contractors"]);
   const [descriptions, setDescriptions] = useState([
     "Professional air conditioning contractors offering expert AC installation, repair, and maintenance services for homes and businesses.",
-    "Get fast, reliable air conditioning repair from certified HVAC technicians. We service all major AC brands.",
   ]);
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -565,28 +561,50 @@ const GeoBusinessLocator = () => {
                       rows={3}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 font-mono"
                     />
-                    <button
-                      onClick={() => {
-                        if (newKeyword.trim()) {
-                          const arr = newKeyword
-                            .split(",")
-                            .map((k) => k.trim())
-                            .filter((k) => k.length > 0);
-                          if (arr.length > 0) {
-                            setKeywords(arr);
-                            setNewKeyword(arr.join("\n")); // Show each entry on a new line
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => {
+                          if (newKeyword.trim()) {
+                            const arr = newKeyword
+                              .split(",")
+                              .map((k) => k.trim())
+                              .filter((k) => k.length > 0);
+                            setNewKeyword(arr.join("\n")); // Only format, do not set
                             setError("");
                           } else {
-                            setError("Input must contain at least one keyword");
+                            setError("Input cannot be empty");
                           }
-                        } else {
-                          setError("Input cannot be empty");
-                        }
-                      }}
-                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
-                    >
-                      Format CSV
-                    </button>
+                        }}
+                        className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
+                      >
+                        Format CSV
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (newKeyword.trim()) {
+                            // Accept both CSV and new-line separated
+                            const arr = newKeyword
+                              .split(/,|\n/)
+                              .map((k) => k.trim())
+                              .filter((k) => k.length > 0);
+                            if (arr.length > 0) {
+                              setKeywords(arr);
+                              setNewKeyword(""); // Clear textarea after set
+                              setError("");
+                            } else {
+                              setError(
+                                "Input must contain at least one keyword"
+                              );
+                            }
+                          } else {
+                            setError("Input cannot be empty");
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
+                      >
+                        Set
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2 text-gray-900 max-h-32 overflow-y-auto">
                     {keywords.map((keyword, index) => (
@@ -619,30 +637,50 @@ const GeoBusinessLocator = () => {
                       rows={3}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 font-mono"
                     />
-                    <button
-                      onClick={() => {
-                        if (newDescription.trim()) {
-                          const arr = newDescription
-                            .split(",")
-                            .map((d) => d.trim())
-                            .filter((d) => d.length > 0);
-                          if (arr.length > 0) {
-                            setDescriptions(arr);
-                            setNewDescription(arr.join("\n")); // Show each entry on a new line
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => {
+                          if (newDescription.trim()) {
+                            const arr = newDescription
+                              .split(",")
+                              .map((d) => d.trim())
+                              .filter((d) => d.length > 0);
+                            setNewDescription(arr.join("\n")); // Only format, do not set
                             setError("");
                           } else {
-                            setError(
-                              "Input must contain at least one description"
-                            );
+                            setError("Input cannot be empty");
                           }
-                        } else {
-                          setError("Input cannot be empty");
-                        }
-                      }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
-                    >
-                      Format CSV
-                    </button>
+                        }}
+                        className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
+                      >
+                        Format CSV
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (newDescription.trim()) {
+                            // Accept both CSV and new-line separated
+                            const arr = newDescription
+                              .split(/,|\n/)
+                              .map((d) => d.trim())
+                              .filter((d) => d.length > 0);
+                            if (arr.length > 0) {
+                              setDescriptions(arr);
+                              setNewDescription(""); // Clear textarea after set
+                              setError("");
+                            } else {
+                              setError(
+                                "Input must contain at least one description"
+                              );
+                            }
+                          } else {
+                            setError("Input cannot be empty");
+                          }
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-1 self-start"
+                      >
+                        Set
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-2 text-gray-900 max-h-40 overflow-y-auto">
                     {descriptions.map((desc, index) => (
