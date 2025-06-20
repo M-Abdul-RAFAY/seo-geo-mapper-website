@@ -392,8 +392,8 @@ const GeoBusinessLocator = () => {
             Geo Business Locator
           </h1>
           <p className="text-gray-900">
-            Generate circular business location patterns with dynamic keywords
-            and descriptions
+            Note: Don't refresh the page, You will lose all your progress. &
+            Redirected to Login
           </p>
         </div>
 
