@@ -338,16 +338,33 @@ const GeoBusinessLocator = () => {
   ]);
 
   // Export to CSV
+  // Replace the existing exportToCSV function with this fixed version
   const exportToCSV = useCallback((data, filename) => {
     if (data.length === 0) return;
 
     // Remove 'color' and 'discNumber' from export
     const filteredData = data.map(({ color, discNumber, ...rest }) => rest);
     const headers = Object.keys(filteredData[0]);
+
+    // Helper function to properly escape CSV values
+    const escapeCSVValue = (value) => {
+      if (value === null || value === undefined) return "";
+      const stringValue = String(value);
+      // If the value contains comma, newline, or quote, wrap it in quotes and escape internal quotes
+      if (
+        stringValue.includes(",") ||
+        stringValue.includes("\n") ||
+        stringValue.includes('"')
+      ) {
+        return '"' + stringValue.replace(/"/g, '""') + '"';
+      }
+      return stringValue;
+    };
+
     const csvContent = [
       headers.join(","),
       ...filteredData.map((row) =>
-        headers.map((header) => `"${row[header]}"`).join(",")
+        headers.map((header) => escapeCSVValue(row[header])).join(",")
       ),
     ].join("\n");
 
