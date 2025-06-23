@@ -15,14 +15,16 @@ import {
 
 const GeoBusinessLocator = () => {
   // State management
+  const [totalPoints, setTotalPoints] = useState(360);
+  const [numDiscs, setNumDiscs] = useState(5);
+  const [radiusIncrementMiles, setRadiusIncrementMiles] = useState(2.0);
+
   const [centerLat, setCenterLat] = useState("");
   const [centerLon, setCenterLon] = useState("");
   const [businessUrl, setBusinessUrl] = useState("");
-  const [businessNames, setBusinessNames] = useState(["Petey's HVAC"]);
-  const [keywords, setKeywords] = useState(["Air Conditioning Contractors"]);
-  const [descriptions, setDescriptions] = useState([
-    "Professional air conditioning contractors offering expert AC installation, repair, and maintenance services for homes and businesses.",
-  ]);
+  const [businessNames, setBusinessNames] = useState([]);
+  const [keywords, setKeywords] = useState([]);
+  const [descriptions, setDescriptions] = useState([]);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState([]);
@@ -39,9 +41,9 @@ const GeoBusinessLocator = () => {
   // Configuration
   const config = useMemo(
     () => ({
-      totalPoints: 360,
-      numDiscs: 5,
-      radiusIncrementMiles: 2.0,
+      totalPoints,
+      numDiscs,
+      radiusIncrementMiles,
       colorPalette: [
         "red",
         "blue",
@@ -55,7 +57,7 @@ const GeoBusinessLocator = () => {
         "yellow",
       ],
     }),
-    []
+    [totalPoints, numDiscs, radiusIncrementMiles]
   );
 
   // Google Geocoding API function
@@ -356,8 +358,16 @@ const GeoBusinessLocator = () => {
     link.click();
   }, []);
 
-  const handleExportMain = () =>
-    exportToCSV(results, "geo_business_locations_comprehensive.csv");
+  const handleExportMain = () => {
+    const filename =
+      businessNames.length > 0
+        ? `${businessNames[0].replace(
+            /[^a-zA-Z0-9]/g,
+            "_"
+          )}_comprehensive_locations.csv`
+        : "geo_business_locations_comprehensive.csv";
+    exportToCSV(results, filename);
+  };
 
   const handleExportBusiness = () => {
     const businessData = results.map(
@@ -379,7 +389,11 @@ const GeoBusinessLocator = () => {
         radiusMiles,
       })
     );
-    exportToCSV(businessData, "business_locations_only.csv");
+    const filename =
+      businessNames.length > 0
+        ? `${businessNames[0].replace(/[^a-zA-Z0-9]/g, "_")}_business_only.csv`
+        : "business_locations_only.csv";
+    exportToCSV(businessData, filename);
   };
 
   return (
@@ -464,7 +478,7 @@ const GeoBusinessLocator = () => {
                   </div>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Business Website URL (Optional)
                   </label>
@@ -478,6 +492,68 @@ const GeoBusinessLocator = () => {
                   />
                 </div>
 
+                {/* Configuration Form */}
+                <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                  <h3 className="font-medium text-gray-800 mb-4">
+                    Generation Settings:
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Total Points
+                      </label>
+                      <input
+                        type="number"
+                        min="10"
+                        max="1000"
+                        value={totalPoints}
+                        onChange={(e) =>
+                          setTotalPoints(parseInt(e.target.value) || 360)
+                        }
+                        className="w-full px-3 text-gray-900 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isProcessing}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Number of Discs
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={numDiscs}
+                        onChange={(e) =>
+                          setNumDiscs(parseInt(e.target.value) || 5)
+                        }
+                        className="w-full px-3 text-gray-900 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isProcessing}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Radius Step (miles)
+                      </label>
+                      <input
+                        type="number"
+                        min="0.1"
+                        max="10"
+                        step="0.1"
+                        value={radiusIncrementMiles}
+                        onChange={(e) =>
+                          setRadiusIncrementMiles(
+                            parseFloat(e.target.value) || 2.0
+                          )
+                        }
+                        className="w-full px-3 text-gray-900 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isProcessing}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Configuration Info */}
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-medium text-gray-800 mb-2">
@@ -486,7 +562,7 @@ const GeoBusinessLocator = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-900">
                     <div>
                       <span className="font-medium">Total Points:</span>{" "}
-                      {config.totalPoints + 1}
+                      {config.totalPoints}
                     </div>
                     <div>
                       <span className="font-medium">Discs:</span>{" "}
